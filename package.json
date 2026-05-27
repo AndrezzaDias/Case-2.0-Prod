@@ -1,0 +1,13 @@
+{
+  "devDependencies": {
+    "@faker-js/faker": "^10.2.0",
+    "cypress": "^15.9.0"
+  },
+  "scripts": {
+    "cy:open": "npx cypress open",
+    "cy:run": "npx cypress run",
+    "cy:chrome": "npx cypress run --browser chrome",
+    "cy:edge": "npx cypress run --browser edge",
+    "cy:cms": "npx cypress run --spec cypress/e2e/cms/**/*.cy.js --browser chrome"
+  }
+}

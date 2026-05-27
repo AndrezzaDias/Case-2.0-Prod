@@ -1,0 +1,53 @@
+name: CMS Prod - Testes Automatizados
+
+on:
+  workflow_dispatch:
+    inputs:
+      spec:
+        description: 'Spec para rodar (deixe vazio para rodar todos)'
+        required: false
+        default: 'cypress/e2e/**/*.cy.js'
+
+jobs:
+  cypress-run:
+    name: Executar Testes Cypress
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Executar testes Cypress
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome
+          spec: ${{ github.event.inputs.spec }}
+        env:
+          CYPRESS_PRODUCAO_URL:     ${{ secrets.CYPRESS_PRODUCAO_URL }}
+          CYPRESS_EMAIL_PRODUCAO:   ${{ secrets.CYPRESS_EMAIL_PRODUCAO }}
+          CYPRESS_SENHA_PRODUCAO:   ${{ secrets.CYPRESS_SENHA_PRODUCAO }}
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          retention-days: 7
+
+      - name: Upload videos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/videos
+          retention-days: 7
