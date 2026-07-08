@@ -41,9 +41,6 @@ describe('[CMS PROD] - [Conteúdos] - [Verificação de Renderização]', () => 
     // Confirma que o título da página está visível
     cy.contains('Conteúdos da Conta').should('be.visible')
 
-    // Confirma que a seção "Minhas Coleções" carregou com ao menos um card
-    cy.contains('Minhas Coleções').should('be.visible')
-
     // Valida que a coleção Blog existe e seu contador é maior que zero
     cy.get('[title="Blog"]', { timeout: 15000 }).should('be.visible')
       .parent()

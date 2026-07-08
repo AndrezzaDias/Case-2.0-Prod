@@ -14,12 +14,23 @@ Automação de testes E2E em **produção** para validar que o CMS Autódromo es
 ## 📁 Estrutura dos Testes
 
 ```
-cypress/e2e/cms/
-├── conteudos/
-│   └── conteudos.cy.js       → Valida as coleções da conta (Blog, Seminovos)
-└── sites/
-    ├── sites.cy.js            → Valida listagem e criação de sites
-    └── sitesConteudos.cy.js   → Valida conteúdos dentro de um site
+cypress/e2e/
+├── cms/
+│   ├── conteudos/
+│   │   └── conteudos.cy.js        → Valida as coleções da conta (Blog, Seminovos)
+│   └── sites/
+│       ├── sites.cy.js            → Valida listagem e criação de sites
+│       └── sitesConteudos.cy.js   → Valida conteúdos dentro de um site
+├── login/
+│   └── login.cy.js                → Valida login com sucesso, senha incorreta e campos vazios
+├── layout/
+│   ├── sidebarAreaAdministrativa.cy.js  → Valida a sidebar da Área Administrativa
+│   ├── sidebarWorkspaceSite.cy.js       → Valida a sidebar de Workspace e a tela de Sites
+│   └── sidebarPainelDeControle.cy.js    → Valida a sidebar do Painel de Controle do site
+└── contas/
+    ├── contas.cy.js                → Smoke test: totais e listagem de contas
+    └── leads/
+        └── envioDeLead.cy.js       → Envia um lead pelo site público e confere na listagem
 ```
 
 ---
@@ -27,7 +38,7 @@ cypress/e2e/cms/
 ## 🧪 O que cada teste valida
 
 ### `conteudos.cy.js`
-- Faz login na conta **Teste QA - Não excluir**
+- Faz login na conta **Teste QA- Não excluir**
 - Acessa a seção **Conteúdos da Conta**
 - Valida que as coleções **Blog** e **Seminovos** estão visíveis
 - Valida que os contadores de cada coleção são maiores que zero
@@ -49,6 +60,43 @@ cypress/e2e/cms/
 - Clica em **Conteúdos** na sidebar
 - Valida que todas as **Coleções Disponíveis** estão visíveis na tela
 
+### `login.cy.js`
+- Faz login com credenciais válidas e valida o redirecionamento para **Contas**
+- Tenta logar com senha incorreta e valida que **não** é redirecionado
+- Tenta logar com os campos vazios e valida que **não** é redirecionado
+
+### `sidebarAreaAdministrativa.cy.js`
+- Faz login e valida o logo e o label **Área Administrativa**
+- Valida os itens principais do menu (Contas, Administradores, Tipos de conteúdo, Integradores, Paddock)
+- Abre o menu **Templates** e valida os submenus (Sites, Páginas, Módulos)
+- Valida a seção **Outros** (Central de Ajuda, Sair)
+
+### `sidebarWorkspaceSite.cy.js`
+- Acessa a conta de teste e valida os itens do menu Workspace (Sites, Conteúdos, Unidades, Configurações, Integradores)
+- Abre o menu **Leads** e valida os submenus (Listagem, Equipes)
+- Valida os itens da Área Administrativa (Contas, Administradores, Templates, Paddock)
+- Valida os elementos da tela de Sites (título, "Acessar site", "Painel de Controle")
+
+### `sidebarPainelDeControle.cy.js`
+- Acessa o Painel de Controle do site e valida os itens de configuração (Painel de controle, Conteúdos, Informações, Unidades, WhatsApp, Integrações, Domínio)
+- Abre o menu **Formulários** e valida os submenus (Cookies, Scripts, Ações sensíveis)
+- Valida a seção **Global** (Header, Footer)
+
+### `contas.cy.js`
+- Faz login e valida que o **Total de contas** é igual à soma de **Contas de clientes** e **Total de contas de teste**
+- Valida que a tabela de contas carrega com ao menos uma linha
+
+### `envioDeLead.cy.js`
+- Acessa o site público **Site da Automação [Não alterar]**
+- Preenche e envia o formulário de conversão de lead (nome, e-mail, telefone, mensagem, preferência de contato e consentimento de marketing)
+- Valida que a requisição de conversão retorna sucesso (200/201/202) com os dados enviados
+- Valida a mensagem **"Obrigado!"**
+- Acessa **Leads → Listagem** na conta de teste e confere que o lead enviado aparece
+
+> ⚠️ O botão de envio usa um seletor gerado por CSS-in-JS (`.sc-c7d92de3-0 > .sc-3675ea87-0`), confirmado manualmente no site — se um novo deploy do site mudar essas classes, ajuste o seletor em [cypress/e2e/contas/leads/envioDeLead.cy.js](cypress/e2e/contas/leads/envioDeLead.cy.js).
+>
+> O site público apresenta erros de hidratação do React (`Minified React error #418/#423`) no carregamento inicial; eles são ignorados em [cypress/support/e2e.js](cypress/support/e2e.js) pois não afetam o fluxo de envio do lead.
+
 ---
 
 ## ▶️ Como rodar localmente
@@ -69,7 +117,20 @@ npm run cy:run
 
 # Rodar apenas os testes de CMS
 npx cypress run --spec "cypress/e2e/cms/**/*.cy.js" --browser chrome
+
+# Rodar login, layout e contas
+npx cypress run --spec "cypress/e2e/login/**/*.cy.js,cypress/e2e/layout/**/*.cy.js,cypress/e2e/contas/**/*.cy.js" --browser chrome
 ```
+
+---
+
+## ⚙️ Comandos Customizados
+
+| Comando | Descrição |
+|---|---|
+| `cy.realizarLoginProducao()` | Realiza login com as credenciais de `email-producao`/`senha-producao` |
+| `cy.acessarContaTesteProducao()` | Faz login, pesquisa e acessa a conta **Teste QA- Não excluir** |
+| `cy.acessarPainelDoSiteProducao()` | Acessa a conta de teste e entra no Painel de Controle do primeiro site |
 
 ---
 
