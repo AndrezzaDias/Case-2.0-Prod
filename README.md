@@ -136,13 +136,15 @@ npx cypress run --spec "cypress/e2e/login/**/*.cy.js,cypress/e2e/layout/**/*.cy.
 
 ## 🚀 Pipeline CI/CD
 
-Os testes rodam no **GitHub Actions** de forma manual.
+Os testes rodam no **GitHub Actions** automaticamente a cada **push** ou **pull request** para `main`, e também podem ser disparados manualmente.
 
-**Para executar:**
+**Para executar manualmente:**
 1. Acesse a aba **Actions** no repositório
 2. Selecione **CMS Prod - Testes Automatizados**
 3. Clique em **Run workflow**
 4. Escolha um spec específico ou deixe em branco para rodar todos
+
+> ⚠️ Como os testes rodam contra **produção** e incluem criação/exclusão de site e envio de um lead real, todo push/PR para `main` dispara essas ações — evite pushes desnecessários nessa branch.
 
 Os screenshots aparecem diretamente no **Job Summary** ao final da execução.
 
